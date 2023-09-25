@@ -2,7 +2,7 @@
 
 Learning Rust by build different small apps.
 
-### Apps
+### Axum app features
 
 - Static routes
 - Basic Login api route
