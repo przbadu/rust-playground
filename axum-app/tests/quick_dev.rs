@@ -7,7 +7,6 @@ use serde_json::json;
 async fn quick_dev() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:8000")?;
 
-    hc.do_get("/hello/name=John!").await?.print().await?;
     hc.do_get("/hello2/doe").await?.print().await?;
     // hc.do_get("/src/main.rs").await?.print().await?;
 
@@ -19,6 +18,8 @@ async fn quick_dev() -> Result<()> {
         }),
     );
     req_login.await?.print().await?;
+
+    hc.do_get("/hello2/doe").await?.print().await?;
 
     Ok(())
 }
