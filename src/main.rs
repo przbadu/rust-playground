@@ -6,32 +6,41 @@ use axum::{
     extract::Path,
     extract::Query,
     response::{Html, IntoResponse},
-    routing::get,
+    routing::{get, get_service},
     Router,
 };
 
 use serde::Deserialize;
+use tower_http::services::ServeDir;
 
 #[tokio::main]
 async fn main() {
-    let routes_hello = Router::new().merge(routes_hello());
+    let routes_all = Router::new()
+        .merge(routes_hello())
+        .fallback_service(routes_static());
 
     // region:     -- Start Server
     let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
     println!("Server listening on http://{addr}\n");
 
     axum::Server::bind(&addr)
-        .serve(routes_hello.into_make_service())
+        .serve(routes_all.into_make_service())
         .await
         .unwrap();
     // endregion: -- Start Server
 }
 
+// region:    -- Route Static
+fn routes_static() -> Router {
+    Router::new().nest_service("/", get_service(ServeDir::new("./")))
+}
+// endregion: -- Route Static
+
 // region:    -- Routes Hello
 fn routes_hello() -> Router {
     Router::new()
         .route("/hello", get(handler_hello))
-        .route("/hello2/:name", get(handler_hello2));
+        .route("/hello2/:name", get(handler_hello2))
 }
 // endregion: -- Routes Hello
 
